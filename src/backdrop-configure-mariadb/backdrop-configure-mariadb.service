@@ -1,0 +1,14 @@
+[Unit]
+Description=Configure mariadb for Backdrop CMS
+Wants=mariadb.service
+After=mariadb.service
+Before=backdrop-install.service httpd.service
+
+[Service]
+Type=oneshot
+EnvironmentFile=-/run/secrets/backdrop-configure-mariadb
+ExecStart=/usr/local/bin/backdrop-configure-mariadb
+RemainAfterExit=true
+
+[Install]
+WantedBy=multi-user.target
