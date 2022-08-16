@@ -4,8 +4,8 @@
 #
 # Author: Daniel J. R. May
 #
-# This script creates a container suitable for backdrop-systemd
-# codebase testing.
+# This script creates a container suitable for testing the
+# backdrop-configure-mariadb systemd service.
 #
 # For more information (or to report issues) go to
 # https://github.com/danieljrmay/backdrop-systemd

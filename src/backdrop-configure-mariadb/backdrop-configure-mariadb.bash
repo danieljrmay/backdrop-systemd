@@ -9,16 +9,19 @@
 # For more information (or to report issues) go to
 # https://github.com/danieljrmay/backdrop-systemd
 
-# Exit codes
+# Exit codes used by this script.
 declare -ir EXIT_OK=0
 declare -ir EXIT_UNSET_ENVIRONMENT_VARIABLE=1
 declare -ir EXIT_FAILED_TO_SECURE_MARIADB=2
 declare -ir EXIT_FAILED_TO_CREATE_BACKDROP_DATABASE=3
 
-# Systemd log identifier
+# Systemd log identifier used by this script, so that log messages
+# recorded by this script can then be isolated from the mass with:
+#
+# > journalctl SYSLOG_IDENTIFIER=backdrop-configure-mariadb
 declare -r identifier='backdrop-configure-mariadb'
 
-# Check environment variables are set.
+# Check environment variables required by this script are set.
 if ! test -v SECURE_MARIADB; then
 	systemd-cat \
 		--identifier=$identifier \
