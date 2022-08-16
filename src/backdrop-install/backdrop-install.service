@@ -1,0 +1,16 @@
+[Unit]
+Description=Install a Backdrop CMS site
+Wants=backdrop-configure-httpd backdrop-configure-mariadb mariadb.service
+After=backdrop-configure-httpd backdrop-configure-mariadb mariadb.service
+Before=httpd.service
+
+[Service]
+Type=oneshot
+EnvironmentFile=/run/secrets/backdrop-install
+User=apache
+Group=apache
+ExecStart=/usr/local/bin/backdrop-install
+RemainAfterExit=true
+
+[Install]
+WantedBy=multi-user.target

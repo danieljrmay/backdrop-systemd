@@ -45,7 +45,9 @@ buildah from --name "$WORKING_CONTAINER" "$BASE_IMAGE"
 
 # Update the container and install all the packages we need.
 buildah run "$WORKING_CONTAINER" -- dnf --assumeyes update
-buildah run "$WORKING_CONTAINER" -- dnf --assumeyes install mariadb-server
+buildah run "$WORKING_CONTAINER" -- dnf --assumeyes install dnf-plugins-core
+buildah run "$WORKING_CONTAINER" -- dnf --assumeyes copr enable danieljrmay/backdrop
+buildah run "$WORKING_CONTAINER" -- dnf --assumeyes install backdrop mariadb-server
 buildah run "$WORKING_CONTAINER" -- dnf --assumeyes clean all
 
 # backdrop-configure-mariadb
@@ -57,6 +59,29 @@ buildah copy "$WORKING_CONTAINER" \
 	/usr/local/bin/backdrop-configure-mariadb
 buildah run "$WORKING_CONTAINER" -- chmod a+x /usr/local/bin/backdrop-configure-mariadb
 buildah run "$WORKING_CONTAINER" -- systemctl enable backdrop-configure-mariadb.service
+
+# backdrop-configure-httpd
+buildah copy "$WORKING_CONTAINER" \
+	../src/backdrop-configure-httpd/backdrop-configure-httpd.service \
+	/etc/systemd/system/backdrop-configure-httpd.service
+buildah copy "$WORKING_CONTAINER" \
+	../src/backdrop-configure-httpd/backdrop-configure-httpd.bash \
+	/usr/local/bin/backdrop-configure-httpd
+buildah run "$WORKING_CONTAINER" -- chmod a+x /usr/local/bin/backdrop-configure-httpd
+buildah run "$WORKING_CONTAINER" -- systemctl enable backdrop-configure-httpd.service
+
+# backdrop-install
+buildah copy "$WORKING_CONTAINER" \
+	../src/backdrop-install/backdrop-install.service \
+	/etc/systemd/system/backdrop-install.service
+buildah copy "$WORKING_CONTAINER" \
+	../src/backdrop-install/backdrop-install.bash \
+	/usr/local/bin/backdrop-install
+buildah run "$WORKING_CONTAINER" -- chmod a+x /usr/local/bin/backdrop-install
+buildah run "$WORKING_CONTAINER" -- systemctl enable backdrop-install.service
+
+# Expose port 80, the default HTTP port.
+buildah config --port 80 "$WORKING_CONTAINER"
 
 # Configure systemd init command as the command to get the container started.
 buildah config --cmd "/usr/sbin/init" "$WORKING_CONTAINER"

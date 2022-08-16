@@ -1,0 +1,13 @@
+[Unit]
+Description=Configure httpd for Backdrop CMS
+Wants=httpd.service
+Before=backdrop-install.service httpd.service
+
+[Service]
+Type=oneshot
+EnvironmentFile=-/run/secrets/backdrop-configure-httpd
+ExecStart=/usr/local/bin/backdrop-configure-httpd
+RemainAfterExit=true
+
+[Install]
+WantedBy=multi-user.target
