@@ -1,6 +1,6 @@
 #!/usr/bin/bash
 #
-# create-image
+# create-test-image
 #
 # Author: Daniel J. R. May
 #
@@ -47,38 +47,17 @@ buildah from --name "$WORKING_CONTAINER" "$BASE_IMAGE"
 buildah run "$WORKING_CONTAINER" -- dnf --assumeyes update
 buildah run "$WORKING_CONTAINER" -- dnf --assumeyes install dnf-plugins-core
 buildah run "$WORKING_CONTAINER" -- dnf --assumeyes copr enable danieljrmay/backdrop
-buildah run "$WORKING_CONTAINER" -- dnf --assumeyes install backdrop mariadb-server
+buildah run "$WORKING_CONTAINER" -- dnf --assumeyes install backdrop make mariadb-server tar xz
 buildah run "$WORKING_CONTAINER" -- dnf --assumeyes clean all
 
-# backdrop-configure-mariadb
-buildah copy "$WORKING_CONTAINER" \
-	../src/backdrop-configure-mariadb/backdrop-configure-mariadb.service \
-	/etc/systemd/system/backdrop-configure-mariadb.service
-buildah copy "$WORKING_CONTAINER" \
-	../src/backdrop-configure-mariadb/backdrop-configure-mariadb.bash \
-	/usr/local/bin/backdrop-configure-mariadb
-buildah run "$WORKING_CONTAINER" -- chmod a+x /usr/local/bin/backdrop-configure-mariadb
-buildah run "$WORKING_CONTAINER" -- systemctl enable backdrop-configure-mariadb.service
+# Install the tarball in the container
+buildah copy "$WORKING_CONTAINER" ../Makefile /root/Makefile
+buildah copy "$WORKING_CONTAINER" ../src /root/src
+buildah run "$WORKING_CONTAINER" -- ls -lhr /root
+buildah run "$WORKING_CONTAINER" -- make --directory=/root install
 
-# backdrop-configure-httpd
-buildah copy "$WORKING_CONTAINER" \
-	../src/backdrop-configure-httpd/backdrop-configure-httpd.service \
-	/etc/systemd/system/backdrop-configure-httpd.service
-buildah copy "$WORKING_CONTAINER" \
-	../src/backdrop-configure-httpd/backdrop-configure-httpd.bash \
-	/usr/local/bin/backdrop-configure-httpd
-buildah run "$WORKING_CONTAINER" -- chmod a+x /usr/local/bin/backdrop-configure-httpd
-buildah run "$WORKING_CONTAINER" -- systemctl enable backdrop-configure-httpd.service
-
-# backdrop-install
-buildah copy "$WORKING_CONTAINER" \
-	../src/backdrop-install/backdrop-install.service \
-	/etc/systemd/system/backdrop-install.service
-buildah copy "$WORKING_CONTAINER" \
-	../src/backdrop-install/backdrop-install.bash \
-	/usr/local/bin/backdrop-install
-buildah run "$WORKING_CONTAINER" -- chmod a+x /usr/local/bin/backdrop-install
-buildah run "$WORKING_CONTAINER" -- systemctl enable backdrop-install.service
+# Enable the systemd services
+buildah run "$WORKING_CONTAINER" -- systemctl enable backdrop-configure-httpd backdrop-configure-mariadb backdrop-install
 
 # Expose port 80, the default HTTP port.
 buildah config --port 80 "$WORKING_CONTAINER"

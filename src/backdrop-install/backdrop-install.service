@@ -9,7 +9,7 @@ Type=oneshot
 EnvironmentFile=/run/secrets/backdrop-install
 User=apache
 Group=apache
-ExecStart=/usr/local/bin/backdrop-install
+ExecStart=/usr/bin/backdrop-install
 RemainAfterExit=true
 
 [Install]

@@ -7,7 +7,7 @@ Before=backdrop-install.service httpd.service
 [Service]
 Type=oneshot
 EnvironmentFile=-/run/secrets/backdrop-configure-mariadb
-ExecStart=/usr/local/bin/backdrop-configure-mariadb
+ExecStart=/usr/bin/backdrop-configure-mariadb
 RemainAfterExit=true
 
 [Install]

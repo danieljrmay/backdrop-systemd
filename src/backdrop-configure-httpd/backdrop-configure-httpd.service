@@ -6,7 +6,7 @@ Before=backdrop-install.service httpd.service
 [Service]
 Type=oneshot
 EnvironmentFile=-/run/secrets/backdrop-configure-httpd
-ExecStart=/usr/local/bin/backdrop-configure-httpd
+ExecStart=/usr/bin/backdrop-configure-httpd
 RemainAfterExit=true
 
 [Install]
