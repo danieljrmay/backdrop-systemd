@@ -58,7 +58,7 @@ env_scripts=$(wildcard src/*/*.env)
 name:=backdrop-systemd
 requirements:=buildah gawk make mock podman rpm-build rpmlint ShellCheck
 testdestdir=testdestdir
-version:=0.1
+version:=0.1.0
 dist_name:=$(name)-$(version)
 tarball:=$(dist_name).tar.xz
 
